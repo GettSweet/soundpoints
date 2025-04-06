@@ -12,6 +12,12 @@ commands:
   reloadsoundpoints:
     description: Перезагружает конфигурацию плагина
     permission: soundpoints.admin
+  forceactivate:
+    description: Принудительно активирует точку
+    permission: soundpoints.admin
+  delpoint:
+    description: Удаляет звуковую точку
+    permission: soundpoints.admin
 
 permissions:
   soundpoints.admin:

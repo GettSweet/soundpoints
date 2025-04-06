@@ -11,9 +11,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import ru.soundpoints.commands.PointsListCommand;
-import ru.soundpoints.commands.ReloadCommand;
-import ru.soundpoints.commands.SetSoundPointCommand;
+import ru.soundpoints.commands.*;
 import ru.soundpoints.units.CustomSound;
 import ru.soundpoints.units.SoundPoint;
 
@@ -36,6 +34,8 @@ public class Main extends JavaPlugin {
         getCommand("setsoundpoint").setExecutor(new SetSoundPointCommand(this));
         getCommand("pointslist").setExecutor(new PointsListCommand(this));
         getCommand("reloadsoundpoints").setExecutor(new ReloadCommand(this));
+        getCommand("forceactivate").setExecutor(new ForceActivateCommand(this));
+        getCommand("delpoint").setExecutor(new DelPointCommand(this));
         startPointsTask();
     }
 

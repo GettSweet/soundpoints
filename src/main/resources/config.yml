@@ -1,3 +1,6 @@
+# Plugin documentation
+# https://github.com/GettSweet/soundpoints/wiki/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F-SoundPoints
+
 messages:
   point_saved: "&aТочка сохранена!"
   no_permission: "&cУ вас нет прав для использования этой команды!"
@@ -25,6 +28,11 @@ messages:
   updraft_extra: " (§7скорость: {speed}§f)"
   coords_label: "Координаты: "
   teleported: "&aВы телепортированы к точке &e{key}&a!"
+  forceactivate_usage: "&cИспользование: /forceactivate <номер_точки>"
+  forceactivate_success: "&aТочка {key} принудительно активирована и сработает в ближайший тик!"
+  use_pointslist: "&cИспользуйте /pointslist для просмотра доступных точек"
+  delpoint_usage: "&cИспользование: /delpoint <номер_точки>"
+  delpoint_success: "&aТочка {key} успешно удалена!"
 
 type_sounds:
   scream: # Название для типа звука

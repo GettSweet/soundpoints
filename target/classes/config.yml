@@ -25,6 +25,11 @@ messages:
   updraft_extra: " (§7скорость: {speed}§f)"
   coords_label: "Координаты: "
   teleported: "&aВы телепортированы к точке &e{key}&a!"
+  forceactivate_usage: "&cИспользование: /forceactivate <номер_точки>"
+  forceactivate_success: "&aТочка {key} принудительно активирована и сработает в ближайший тик!"
+  use_pointslist: "&cИспользуйте /pointslist для просмотра доступных точек"
+  delpoint_usage: "&cИспользование: /delpoint <номер_точки>"
+  delpoint_success: "&aТочка {key} успешно удалена!"
 
 type_sounds:
   scream: # Название для типа звука

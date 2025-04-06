@@ -1,8 +1,10 @@
 ru\soundpoints\Main$1.class
 ru\soundpoints\commands\ReloadCommand.class
 ru\soundpoints\Main.class
+ru\soundpoints\commands\ForceActivateCommand.class
 ru\soundpoints\commands\PointsListCommand.class
 ru\soundpoints\units\CustomSound.class
 ru\soundpoints\commands\SetSoundPointCommand.class
+ru\soundpoints\commands\DelPointCommand.class
 ru\soundpoints\Main$1$1.class
 ru\soundpoints\units\SoundPoint.class
