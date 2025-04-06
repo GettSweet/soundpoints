@@ -1,0 +1,19 @@
+name: SoundPoints
+version: '1.20'
+main: ru.soundpoints.Main
+api-version: '1.21'
+commands:
+  setsoundpoint:
+    description: Сохраняет текущую позицию как точку
+    permission: soundpoints.admin
+  pointslist:
+    description: Показывает список всех точек
+    permission: soundpoints.admin
+  reloadsoundpoints:
+    description: Перезагружает конфигурацию плагина
+    permission: soundpoints.admin
+
+permissions:
+  soundpoints.admin:
+    description: Позволяет использовать команды SoundPoints
+    default: op
