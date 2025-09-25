@@ -1,7 +1,8 @@
 name: SoundPoints
-version: '1.20'
+version: 'v1.0.3'
 main: ru.soundpoints.Main
 api-version: '1.21'
+softdepend: [MythicMobs]
 commands:
   setsoundpoint:
     description: Сохраняет текущую позицию как точку
@@ -11,12 +12,6 @@ commands:
     permission: soundpoints.admin
   reloadsoundpoints:
     description: Перезагружает конфигурацию плагина
-    permission: soundpoints.admin
-  forceactivate:
-    description: Принудительно активирует точку
-    permission: soundpoints.admin
-  delpoint:
-    description: Удаляет звуковую точку
     permission: soundpoints.admin
 
 permissions:

@@ -1,6 +1,3 @@
-# Plugin documentation
-# https://github.com/GettSweet/soundpoints/wiki/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F-SoundPoints
-
 messages:
   point_saved: "&aТочка сохранена!"
   no_permission: "&cУ вас нет прав для использования этой команды!"
@@ -21,26 +18,20 @@ messages:
     - "&fВсплытие: &7{updraft}{updraft_extra}"
     - "&fСкорость всплытия: &7{speed}"
     - "&fИИ: &7{ai}"
-
   enabled: "вкл"
   disabled: "выкл"
   random_extra: " (§7мин. время: {min_time} сек§f)"
   updraft_extra: " (§7скорость: {speed}§f)"
   coords_label: "Координаты: "
   teleported: "&aВы телепортированы к точке &e{key}&a!"
-  forceactivate_usage: "&cИспользование: /forceactivate <номер_точки>"
-  forceactivate_success: "&aТочка {key} принудительно активирована и сработает в ближайший тик!"
-  use_pointslist: "&cИспользуйте /pointslist для просмотра доступных точек"
-  delpoint_usage: "&cИспользование: /delpoint <номер_точки>"
-  delpoint_success: "&aТочка {key} успешно удалена!"
 
 type_sounds:
-  scream: # Название для типа звука
-    sounds: # Звуки
-      - sound: ENTITY_GHAST_SCREAM # Какой звук будет проигрываться из майнкрафта
-        tonality: 1.0 # Тональность звука от 0.1 до 1.0, где 0.1 очень низкий звук (лучше всего подходит для страшных звуков)
-        volume: 100 # Громкость в % от 0 до 100
-        hear_blocks: 100 # На сколько далеко будет слышен звук
+  scream:
+    sounds:
+      - sound: ENTITY_GHAST_SCREAM
+        tonality: 1.0
+        volume: 100
+        hear_blocks: 100
       - sound: ENTITY_ALLAY_DEATH
         tonality: 0.4
         volume: 100
@@ -58,15 +49,16 @@ type_sounds:
 
 points:
   '01':
-    cords: 0, 0, 0, world # Координаты и мир
-    type: scream # Тип звука который можно изменить выше в категории "type_sounds"
-    cooldown: 60 # Кулдаун между срабатыванием точки
-    random: true # Вкл/выкл рандомного срабатывания звука
-    min_timeing: 30 # Минимальное время для рандома
-    spawn_mob: false # Вкл/выкл спавн мобов
-    type_mob: # Тип сущности
+    cords: 0, 0, 0, world
+    type: scream
+    cooldown: 60
+    random: true
+    min_timeing: 30
+    spawn_mob: true
+    type_mob:
       - salmon
       - cod
-    updraft_to_air: true # Вкл/Выкл поднятие сущности до поверхности воды, после чего сущность больше не будет подниматься
-    speed_updraft: 1.0 # 1.0 - медленная скорость поднятия до поверхности воды
-    ai: true # Вкл/выкл искусственного интеллекта для сущности (при выключении этой функции сущность больше не будет двигаться, вообще. Она сука живая, но как будто не живая)
+      - MYTHIC_MOB_NAME # Имя моба из MythicMobs, например, "SkeletonKing"
+    updraft_to_air: true
+    speed_updraft: 1.0
+    ai: true

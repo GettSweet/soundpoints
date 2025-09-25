@@ -71,7 +71,7 @@ public class PointsListCommand implements CommandExecutor {
             String coordsLabelText = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages.coords_label", "Координаты: "));
 
             for (String line : infoLines) {
-                String mobTypesStr = point.isSpawnMob() ? String.join(", ", point.getMobTypes().stream().map(type -> type.name().toLowerCase()).toList()) : "";
+                String mobTypesStr = point.isSpawnMob() ? String.join(", ", point.getMobTypes()) : "";
                 String formattedLine = line
                         .replace("{key}", key)
                         .replace("{coords}", String.format("%.0f, %.0f, %.0f", loc.getX(), loc.getY(), loc.getZ()))

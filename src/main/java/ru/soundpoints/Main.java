@@ -11,7 +11,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import ru.soundpoints.commands.*;
+import ru.soundpoints.commands.PointsListCommand;
+import ru.soundpoints.commands.ReloadCommand;
+import ru.soundpoints.commands.SetSoundPointCommand;
 import ru.soundpoints.units.CustomSound;
 import ru.soundpoints.units.SoundPoint;
 
@@ -19,23 +21,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+
+import io.lumine.mythic.api.mobs.MythicMob;
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.mobs.ActiveMob;
 
 public class Main extends JavaPlugin {
     private Map<String, SoundPoint> points = new HashMap<>();
     private Map<String, List<CustomSound>> soundTypes = new HashMap<>();
     private FileConfiguration config;
+    private boolean isMythicMobsEnabled = false;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
         config = getConfig();
+        isMythicMobsEnabled = Bukkit.getPluginManager().getPlugin("MythicMobs") != null;
         loadSoundTypes();
         loadPoints();
         getCommand("setsoundpoint").setExecutor(new SetSoundPointCommand(this));
         getCommand("pointslist").setExecutor(new PointsListCommand(this));
         getCommand("reloadsoundpoints").setExecutor(new ReloadCommand(this));
-        getCommand("forceactivate").setExecutor(new ForceActivateCommand(this));
-        getCommand("delpoint").setExecutor(new DelPointCommand(this));
         startPointsTask();
     }
 
@@ -80,11 +88,7 @@ public class Main extends JavaPlugin {
             config.set(path + ".min_timeing", point.getMinTimeing());
             config.set(path + ".spawn_mob", point.isSpawnMob());
             if (point.isSpawnMob()) {
-                List<String> mobTypeNames = new ArrayList<>();
-                for (EntityType mobType : point.getMobTypes()) {
-                    mobTypeNames.add(mobType.name().toLowerCase());
-                }
-                config.set(path + ".type_mob", mobTypeNames);
+                config.set(path + ".type_mob", point.getMobTypes());
                 config.set(path + ".updraft_to_air", point.isUpdraftToAir());
                 config.set(path + ".speed_updraft", point.getSpeedUpdraft());
                 config.set(path + ".ai", point.hasAi());
@@ -162,32 +166,63 @@ public class Main extends JavaPlugin {
                                 spawnLocation.add(0, 1, 0);
                             }
 
-                            EntityType selectedMobType = point.getMobTypes().get(random.nextInt(point.getMobTypes().size()));
-                            Entity entity = spawnLocation.getWorld().spawnEntity(spawnLocation, selectedMobType);
-                            if (entity instanceof LivingEntity) {
-                                LivingEntity mob = (LivingEntity) entity;
+                            String selectedMob = point.getMobTypes().get(random.nextInt(point.getMobTypes().size()));
+                            World world = spawnLocation.getWorld();
+                            LivingEntity mob = null;
+                            boolean spawned = false;
+
+                            if (isMythicMobsEnabled) {
+                                MythicBukkit mythic = MythicBukkit.inst();
+                                Optional<MythicMob> mmob = mythic.getMobManager().getMythicMob(selectedMob);
+                                if (mmob.isPresent()) {
+                                    ActiveMob am = mythic.getMobManager().spawnMob(selectedMob, spawnLocation);
+                                    Entity entity = am.getEntity().getBukkitEntity();
+                                    if (entity instanceof LivingEntity) {
+                                        mob = (LivingEntity) entity;
+                                        spawned = true;
+                                    } else {
+                                        getLogger().warning("MythicMob " + selectedMob + " не является живой сущностью!");
+                                    }
+                                }
+                            }
+
+                            if (!spawned) {
+                                try {
+                                    EntityType type = EntityType.valueOf(selectedMob.toUpperCase());
+                                    Entity entity = world.spawnEntity(spawnLocation, type);
+                                    if (entity instanceof LivingEntity) {
+                                        mob = (LivingEntity) entity;
+                                        spawned = true;
+                                    } else {
+                                        getLogger().warning("Сущность " + selectedMob + " не является живой!");
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    getLogger().warning("Неверный тип сущности: " + selectedMob + ". Проверьте, является ли это ванильным мобом или мобом из MythicMobs.");
+                                }
+                            }
+
+                            if (mob != null) {
                                 mob.setAI(point.hasAi());
 
                                 // Логика всплытия
                                 if (point.isUpdraftToAir()) {
+                                    LivingEntity finalMob = mob; // Для использования в runnable
                                     new BukkitRunnable() {
                                         @Override
                                         public void run() {
-                                            if (!mob.isValid() || mob.getLocation().getBlock().getType().isAir()) {
+                                            if (!finalMob.isValid() || finalMob.getLocation().getBlock().getType().isAir()) {
                                                 cancel();
                                                 return;
                                             }
-                                            Location newLoc = mob.getLocation().add(0, point.getSpeedUpdraft() * 0.1, 0);
+                                            Location newLoc = finalMob.getLocation().add(0, point.getSpeedUpdraft() * 0.1, 0);
                                             if (newLoc.getY() >= 319) {
                                                 cancel();
                                                 return;
                                             }
-                                            mob.teleport(newLoc);
+                                            finalMob.teleport(newLoc);
                                         }
                                     }.runTaskTimer(Main.this, 0L, 2L);
                                 }
-                            } else {
-                                getLogger().warning("Сущность " + selectedMobType + " не является живой и не поддерживает AI!");
                             }
                         }
 
@@ -211,7 +246,7 @@ public class Main extends JavaPlugin {
                 int minTimeing = config.getInt(path + ".min_timeing");
                 boolean spawnMob = config.getBoolean(path + ".spawn_mob");
 
-                List<EntityType> mobTypes = new ArrayList<>();
+                List<String> mobTypes = new ArrayList<>();
                 boolean updraftToAir = false;
                 float speedUpdraft = 1.0f;
                 boolean ai = true;
@@ -219,12 +254,9 @@ public class Main extends JavaPlugin {
                 if (spawnMob) {
                     Object mobTypeConfig = config.get(path + ".type_mob");
                     if (mobTypeConfig instanceof String) {
-                        mobTypes.add(EntityType.valueOf(((String) mobTypeConfig).toUpperCase()));
+                        mobTypes.add((String) mobTypeConfig);
                     } else if (mobTypeConfig instanceof List) {
-                        List<String> mobTypeNames = (List<String>) mobTypeConfig;
-                        for (String mobName : mobTypeNames) {
-                            mobTypes.add(EntityType.valueOf(mobName.toUpperCase()));
-                        }
+                        mobTypes = (List<String>) mobTypeConfig;
                     }
                     updraftToAir = config.getBoolean(path + ".updraft_to_air");
                     speedUpdraft = (float) config.getDouble(path + ".speed_updraft");
